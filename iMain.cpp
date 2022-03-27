@@ -1,8 +1,13 @@
 # include "iGraphics.h"
 # include "gl.h"
 
-int x = 300, y = 300, r = 15;
 
+
+
+double x = 0, y = 0, r = 15;
+double Pi=3.1416;
+double g=9.81;
+double v=20;
 /*
 	function iDraw() is called again and again by the system.
 */
@@ -91,10 +96,20 @@ void iSpecialKeyboard(unsigned char key)
     //place your codes for other keys here
 }
 
+void change()
+{
+    while(y>0)
+    {
+        x+=(v*cos(45));
+        
+    }
+}
 
 int main()
 {
     //place your own initialization codes here.
+    iSetTimer(50,change);
     iInitialize(400, 400, "Demo!");
     return 0;
 }
+
