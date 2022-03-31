@@ -1,44 +1,31 @@
 # include "iGraphics.h"
 # include "gl.h"
+#include<math.h>
 
-int screen_width = 1000;
-int screen_height = 640;
+double x = 0, y =10 , r = 10;
+double Pi=acos(-1);
+double g=9.81/10;
+double v;
+double scr_width=1800,scr_height=800;
+bool projectile=0;
+double theta;
+typedef struct {
+    double x;
+    double y;
+    double vel_x;
+    double vel_y;
+    double acc_x;
+    double acc_y;
+}motion;
 
-//variables needed for pendulum
-double starting_x = 20;
-double starting_y = 10;
-double Pi = 3.1416;
-double g = 9.81;
-double v = 20;
-double angle = Pi/4;
-double H = (v*v)/(2*g);
+double obj_line_x;
+double obj_line_y;
 
-int r = 15;
-
-double x = 20, y = 10;
-
-//variables needed for pendulum
-bool pendulum = true;
-bool startPendulum = false;
-bool reset = false;
-double effectiveLength = 100;
-double ampAngle = Pi/4;
-double timetracker = 0;
-
-typedef struct BOB
-{
-    double x = 0;
-    double y = 0;
-    double mass = 1;
-    double Amplitude = (effectiveLength)*sin(ampAngle);
-    double freq = sqrt(g/effectiveLength);
-    double v = freq*sqrt((Amplitude*Amplitude) - (x*x));
-    double acc = (-1)*freq*freq*(x);
-    double k = (mass*g)/effectiveLength;
-    double period = (2*Pi)/freq;
-} bob;
-
-bob bob1;
+motion *ball;
+double dx,dy;
+double dt=1;
+char str[100]="Press 's' here to throw the projectile.Press 'p' to pause and 'r' to resume.";
+char str1[100]="Adjust your mouse line to set velocity and velocity angle accordingly.";
 
 /*
 	function iDraw() is called again and again by the system.
@@ -47,24 +34,12 @@ void iDraw()
 {
     //place your drawing codes here
     iClear();
-
-    if(pendulum)
-    {
-        iSetColor(255, 255, 255);
-        iLine((screen_width-200)/2, (screen_height-50), (screen_width+200)/2, (screen_height-50));
-        iLine(screen_width/2, (screen_height-50), (screen_width/2) + bob1.x, (screen_height- 50 - effectiveLength + bob1.y));
-        iSetColor(255, 255, 0);
-        iLine(screen_width/2, (screen_height-50), screen_width/2, (screen_height-50 - effectiveLength));
-        iSetColor(127, 127, 127);
-        iFilledCircle((screen_width/2) + bob1.x, (screen_height- 50 - effectiveLength + bob1.y), 15, 1000);
-    }
-
-    else
-    {
-        iSetColor(20,200,255);
-        iFilledCircle(x, y, r);
-    }
-
+    iSetColor(20,200,255);
+    iFilledCircle(x,y,r,1000);
+    iSetColor(255,255,255);
+    iLine(0,0,obj_line_x,obj_line_y);
+    iText(700,700,str);
+    iText(700,690,str1);
 }
 
 /*
@@ -75,7 +50,15 @@ void iMouseMove(int mx, int my)
 {
     //printf("x = %d, y= %d\n",mx,my);
     //place your codes here
-
+    double m1,m2;
+    m1=mx-20;
+    m2=my-20;
+    theta = atan(m2/m1)*180/Pi;
+    obj_line_x=m1;
+    obj_line_y=m2;
+    v=sqrt(m1*m1+m2*m2)/10;
+    dx=v*cos(theta*Pi/180);
+    dy=v*sin(theta*Pi/180);
 }
 
 /*
@@ -84,9 +67,7 @@ void iMouseMove(int mx, int my)
 */
 void iMouse(int button, int state, int mx, int my)
 {
-    //if(mx==x) x+=mx;
-    //else if(my==y) y+=my;
-    if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
+    /*if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN)
     {
         //place your codes here
         //printf("x = %d, y= %d\n",mx,my);
@@ -95,9 +76,19 @@ void iMouse(int button, int state, int mx, int my)
     else if(button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN)
     {
         //place your codes here
-        //x -= 5;
-        //y -= 5;
+        x -= 5;
+        y -= 5;
     }
+    */
+    /*double m1,m2;
+    m1=mx-20;
+    m2=my-20;
+    theta = atan(m2/m1)*180/Pi;
+    obj_line_x=m1;
+    obj_line_y=m2;
+    dx=v*cos(theta*Pi/180);
+    dy=v*sin(theta*Pi/180);
+    */
 }
 
 /*
@@ -108,43 +99,33 @@ void iKeyboard(unsigned char key)
 {
     if(key == 's')
     {
-        reset = true;
-        bob1.x = bob1.Amplitude;
-        bob1.y = effectiveLength*(1 - cos(ampAngle));
+        projectile=1;
     }
-    else if(key == ' ')
+    else if(key == 'p')
     {
-        startPendulum = !startPendulum;
-        /*
-        if(!startPendulum)
-        {
-            bob1.x = bob1.Amplitude;
-            bob1.y = effectiveLength*(1 - cos(ampAngle));
-            startPendulum = true;
-        }
-        else
-        {
-            startPendulum = false;
-        }
-        */
-
+        iPauseTimer(0);
     }
-    else if(key == GLUT_KEY_UP)
+    else if(key == 'r')
     {
-        //y++;
+        iResumeTimer(0);
+    }
+    /*if(key == GLUT_KEY_UP)
+    {
+        y++;
     }
     else if(key== GLUT_KEY_DOWN)
     {
-        //y--;
+        y--;
     }
     else if(key== GLUT_KEY_RIGHT)
     {
-        //x++;
+        x++;
     }
     else if(key== GLUT_KEY_LEFT)
     {
-        //x--;
+        x--;
     }
+    */
     //place your codes for other keys here
 }
 
@@ -169,30 +150,27 @@ void iSpecialKeyboard(unsigned char key)
 
 void change()
 {
-    if(pendulum)
+    if(projectile)
     {
-        if(startPendulum)
+        x=dx*dt;
+        y=(dy*dt)-(0.5*g*dt*dt);
+        dt+=0.5;
+        if(y<0)
         {
-            bob1.x = bob1.Amplitude * cos((bob1.freq*timetracker));
-            bob1.y = effectiveLength - sqrt((effectiveLength*effectiveLength) - (bob1.x*bob1.x));
-            timetracker += 1;
+            x=0;
+            y=10;
+            dt=1;
+            projectile=0;
         }
-        if(reset)
-        {
-            timetracker = 0;
-            reset = !reset;
-        }
-
     }
 }
 
 int main()
 {
     //place your own initialization codes here.
-    printf("%f", bob1.period);
-    iSetTimer(50, change);
-    iInitialize(screen_width, screen_height, "Demo!");
+    iSetTimer(10,change);
+    iInitialize(scr_width, scr_height, "My main screen");
+
 
     return 0;
 }
-
