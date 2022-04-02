@@ -2,7 +2,7 @@
 # include "gl.h"
 #include<math.h>
 
-double init_x=0,init_y=10;
+double init_x=450,init_y=10;
 double x=init_x , y=init_y , r = 10;
 double red=0,green=0,blue=255;
 double Pi=acos(-1);
@@ -14,6 +14,7 @@ double theta;
 typedef struct {
     double x;
     double y;
+    double vel;
     double vel_x;
     double vel_y;
     double acc_x;
@@ -25,6 +26,7 @@ typedef struct{
     double y;
 }coordinate;
 
+motion *ball=(motion*)malloc(sizeof(motion));
 coordinate motion_curve[100];
 
 
@@ -33,15 +35,14 @@ double object_origin_y;
 double obj_line_x;
 double obj_line_y;
 
-motion *ball=(motion*)malloc(sizeof(motion));
+
+double mass=2;
+double potential;
+double kinetic;
 double dx,dy;
 double dt=1;
 char str[100]="Press 's' here to throw the projectile.Press 'p' to pause and 'r' to resume.";
 char str1[100]="Adjust your mouse line to set velocity and velocity angle accordingly.";
-int line_state=0;
-int mouse_state=0;
-double box_x=700,box_y=500,box_dx=200,box_dy=15;
-int angle=0;
 /*
 	function iDraw() is called again and again by the system.
 */
@@ -68,6 +69,16 @@ void iDraw()
         iText(500,700,str,GLUT_BITMAP_HELVETICA_18);
         iText(500,680,str1,GLUT_BITMAP_HELVETICA_18);
     }
+    iSetColor(255,255,255);
+    iRectangle(10,10,290,900);
+    iSetColor(255,255,0);
+    iFilledRectangle(50,10,80,potential);
+    if(projectile)
+    {
+        iSetColor(255,0,0);
+        iFilledRectangle(150,10,80,kinetic);
+    }
+
     /*iSetColor(255,255,255);
     iFilledRectangle(init_x-r,10,2*r,init_y-10);*/
 }
@@ -137,27 +148,21 @@ void iKeyboard(unsigned char key)
     if(key == 's')
     {
         projectile=1;
-        sketch=1;
     }
     else if(key == 'p')
     {
         iPauseTimer(0);
         FILE *fp;
         fp=fopen("MOTION.txt","w");
-        ball->x=x;
-        ball->y=y;
-        ball->vel_x=v*cos(theta);
-        ball->vel_y=v*sin(theta)-(g*dt);
-        ball->acc_x=0;
-        ball->acc_y=-g;
         fprintf(fp,"Velocity of ball:%0.2lf\n",v);
         fprintf(fp,"Angle of projection:%0.2lf\n",theta*180/Pi);
-        fprintf(fp,"The current horizontal position of the ball is: %0.2lf\n",ball->x);
-        fprintf(fp,"The current vertical position of the ball is: %0.2lf\n",ball->y);
-        fprintf(fp,"The current horizontal velocity of the ball is: %0.2lf\n",ball->vel_x);
-        fprintf(fp,"The current vertical velocity of the ball is: %0.2lf\n",ball->vel_y);
+        fprintf(fp,"The current horizontal position of the ball is    : %0.2lf\n",ball->x);
+        fprintf(fp,"The current vertical position of the ball is      : %0.2lf\n",ball->y);
+        fprintf(fp,"The current horizontal velocity of the ball is    : %0.2lf\n",ball->vel_x);
+        fprintf(fp,"The current vertical velocity of the ball is      : %0.2lf\n",ball->vel_y);
         fprintf(fp,"The current horizontal acceleration of the ball is: %0.2lf\n",ball->acc_x);
-        fprintf(fp,"The current vertical acceleration of the ball is: %0.2lf\n",ball->acc_y);
+        fprintf(fp,"The current vertical acceleration of the ball is  : %0.2lf\n",ball->acc_y);
+        fprintf(fp,"The highest vertical distance of the ball is      : %0.2lf\n",v*v*sin(theta)*sin(theta)/2*g);
         fclose(fp);
     }
     else if(key == 'r')
@@ -204,7 +209,7 @@ void iSpecialKeyboard(unsigned char key)
 }
 
 
-int i=0;
+double dt_1=1;
 void change()
 {
     if(projectile)
@@ -217,15 +222,23 @@ void change()
             y=(v*dt)-(0.5*g*dt*dt)+init_y;
             dt++;
         }
-
+        ball->x=x;
+        ball->y=y;
+        ball->vel_x=v*cos(theta);
+        ball->vel_y=v*sin(theta)-(g*dt_1);
+        ball->acc_x=0;
+        ball->acc_y=-g;
+        ball->vel=sqrt((ball->vel_x*ball->vel_x)+(ball->vel_y*ball->vel_y));
+        potential=mass*g*y;
+        kinetic=0.5*g*ball->vel_y*ball->vel_y;
+        dt_1++;
         if(y<0)
         {
             x=init_x;
             y=init_y;
             projectile=0;
             dt=1;
-            sketch=0;
-            i=0;
+            dt_1=1;
         }
     }
 }
