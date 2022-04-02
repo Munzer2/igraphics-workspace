@@ -2,7 +2,9 @@
 # include "gl.h"
 #include<math.h>
 
-double x = 0, y =10 , r = 10;
+double init_x=400,init_y=200;
+double x=init_x , y=init_y , r = 10;
+double red=0,green=0,blue=255;
 double Pi=acos(-1);
 double g=9.81/10;
 double v;
@@ -18,28 +20,56 @@ typedef struct {
     double acc_y;
 }motion;
 
+typedef struct{
+    double x;
+    double y;
+}coordinate;
+
+coordinate motion_curve[100];
+
+
+double object_origin_x;
+double object_origin_y;
 double obj_line_x;
 double obj_line_y;
 
-motion *ball;
+motion *ball=(motion*)malloc(sizeof(motion));
 double dx,dy;
 double dt=1;
 char str[100]="Press 's' here to throw the projectile.Press 'p' to pause and 'r' to resume.";
 char str1[100]="Adjust your mouse line to set velocity and velocity angle accordingly.";
-
+int line_state=0;
+int mouse_state=0;
+double box_x=700,box_y=500,box_dx=200,box_dy=15;
+int angle=0;
 /*
 	function iDraw() is called again and again by the system.
 */
+
+
+int sketch=1;
+void draw_sketch(double x,double y)
+{
+    iSetColor(255,255,0);
+    iFilledCircle(x,y,r=5,1000);
+}
+
+
 void iDraw()
 {
     //place your drawing codes here
     iClear();
-    iSetColor(20,200,255);
+    iSetColor(red,green,blue);
     iFilledCircle(x,y,r,1000);
     iSetColor(255,255,255);
-    iLine(0,0,obj_line_x,obj_line_y);
-    iText(700,700,str);
-    iText(700,690,str1);
+    if(!projectile)
+    {
+        iLine(object_origin_x,object_origin_y,obj_line_x,obj_line_y);
+        iText(700,700,str,GLUT_BITMAP_HELVETICA_18);
+        iText(700,680,str1,GLUT_BITMAP_HELVETICA_18);
+    }
+    /*iSetColor(255,255,255);
+    iFilledRectangle(init_x-r,10,2*r,init_y-10);*/
 }
 
 /*
@@ -48,17 +78,24 @@ void iDraw()
 */
 void iMouseMove(int mx, int my)
 {
-    //printf("x = %d, y= %d\n",mx,my);
-    //place your codes here
     double m1,m2;
     m1=mx-20;
     m2=my-20;
-    theta = atan(m2/m1)*180/Pi;
+    if(m1-init_x==0)
+    {
+        theta=Pi/2;
+    }
+    else
+    {
+        theta = atan((m2-init_y)/(m1-init_x));
+    }
     obj_line_x=m1;
     obj_line_y=m2;
-    v=sqrt(m1*m1+m2*m2)/10;
-    dx=v*cos(theta*Pi/180);
-    dy=v*sin(theta*Pi/180);
+    object_origin_x=init_x;
+    object_origin_y=init_y;
+    v=sqrt((m1-init_x)*(m1-init_x)+(m2-init_y)*(m2-init_y))/10;
+    dx=v*cos(theta);
+    dy=v*sin(theta);
 }
 
 /*
@@ -100,10 +137,28 @@ void iKeyboard(unsigned char key)
     if(key == 's')
     {
         projectile=1;
+        sketch=1;
     }
     else if(key == 'p')
     {
         iPauseTimer(0);
+        FILE *fp;
+        fp=fopen("MOTION.txt","w");
+        ball->x=x;
+        ball->y=y;
+        ball->vel_x=v*cos(theta*Pi/180);
+        ball->vel_y=v*sin(theta*Pi/180)-(g*dt);
+        ball->acc_x=0;
+        ball->acc_y=-g;
+        fprintf(fp,"Velocity of ball:%0.2lf\n",v);
+        fprintf(fp,"Angle of projection:%0.2lf\n",theta);
+        fprintf(fp,"The current horizontal position of the ball is: %0.2lf\n",ball->x);
+        fprintf(fp,"The current vertical position of the ball is: %0.2lf\n",ball->y);
+        fprintf(fp,"The current horizontal velocity of the ball is: %0.2lf\n",ball->vel_x);
+        fprintf(fp,"The current vertical velocity of the ball is: %0.2lf\n",ball->vel_y);
+        fprintf(fp,"The current horizontal acceleration of the ball is: %0.2lf\n",ball->acc_x);
+        fprintf(fp,"The current vertical acceleration of the ball is: %0.2lf\n",ball->acc_y);
+        fclose(fp);
     }
     else if(key == 'r')
     {
@@ -148,19 +203,29 @@ void iSpecialKeyboard(unsigned char key)
     //place your codes for other keys here
 }
 
+
+int i=0;
 void change()
 {
     if(projectile)
     {
-        x=dx*dt;
-        y=(dy*dt)-(0.5*g*dt*dt);
-        dt+=0.5;
+        if(theta>0)x+=dx;
+        else x-=dx;
+        if(theta!=Pi/2)y=((x-init_x)*tan(theta))-((g*(x-init_x)*(x-init_x))/(2*v*v*cos(theta)*cos(theta)))+init_y;
+        else
+        {
+            y=(v*dt)-(0.5*g*dt*dt)+init_y;
+            dt++;
+        }
+
         if(y<0)
         {
-            x=0;
-            y=10;
-            dt=1;
+            x=init_x;
+            y=init_y;
             projectile=0;
+            dt=1;
+            sketch=0;
+            i=0;
         }
     }
 }
@@ -170,7 +235,5 @@ int main()
     //place your own initialization codes here.
     iSetTimer(10,change);
     iInitialize(scr_width, scr_height, "My main screen");
-
-
     return 0;
 }
