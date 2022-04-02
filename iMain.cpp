@@ -2,7 +2,7 @@
 # include "gl.h"
 #include<math.h>
 
-double init_x=400,init_y=200;
+double init_x=0,init_y=10;
 double x=init_x , y=init_y , r = 10;
 double red=0,green=0,blue=255;
 double Pi=acos(-1);
@@ -65,8 +65,8 @@ void iDraw()
     if(!projectile)
     {
         iLine(object_origin_x,object_origin_y,obj_line_x,obj_line_y);
-        iText(700,700,str,GLUT_BITMAP_HELVETICA_18);
-        iText(700,680,str1,GLUT_BITMAP_HELVETICA_18);
+        iText(500,700,str,GLUT_BITMAP_HELVETICA_18);
+        iText(500,680,str1,GLUT_BITMAP_HELVETICA_18);
     }
     /*iSetColor(255,255,255);
     iFilledRectangle(init_x-r,10,2*r,init_y-10);*/
@@ -146,12 +146,12 @@ void iKeyboard(unsigned char key)
         fp=fopen("MOTION.txt","w");
         ball->x=x;
         ball->y=y;
-        ball->vel_x=v*cos(theta*Pi/180);
-        ball->vel_y=v*sin(theta*Pi/180)-(g*dt);
+        ball->vel_x=v*cos(theta);
+        ball->vel_y=v*sin(theta)-(g*dt);
         ball->acc_x=0;
         ball->acc_y=-g;
         fprintf(fp,"Velocity of ball:%0.2lf\n",v);
-        fprintf(fp,"Angle of projection:%0.2lf\n",theta);
+        fprintf(fp,"Angle of projection:%0.2lf\n",theta*180/Pi);
         fprintf(fp,"The current horizontal position of the ball is: %0.2lf\n",ball->x);
         fprintf(fp,"The current vertical position of the ball is: %0.2lf\n",ball->y);
         fprintf(fp,"The current horizontal velocity of the ball is: %0.2lf\n",ball->vel_x);
