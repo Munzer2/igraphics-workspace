@@ -1,9 +1,10 @@
 # depslib dependency file v1.0
-1648411090 source:d:\buet\l1t1\cse101 + cse102\1-1 project\igraphics-workspace\imain.cpp
+1648926144 source:d:\buet\l1t1\cse101 + cse102\1-1 project\igraphics-workspace\imain.cpp
 	"iGraphics.h"
 	"gl.h"
+	<math.h>
 
-1648360131 d:\buet\l1t1\cse101 + cse102\1-1 project\igraphics-workspace\igraphics.h
+1648926144 d:\buet\l1t1\cse101 + cse102\1-1 project\igraphics-workspace\igraphics.h
 	<stdio.h>
 	<stdlib.h>
 	<windows.h>
@@ -12,15 +13,20 @@
 	<math.h>
 	"glaux.h"
 
-1563893532 d:\buet\l1t1\cse101 + cse102\1-1 project\igraphics-workspace\glut.h
+1648926144 d:\buet\l1t1\cse101 + cse102\1-1 project\igraphics-workspace\glut.h
 	<windows.h>
 	<GL/gl.h>
 	<GL/glu.h>
 
-1563893532 d:\buet\l1t1\cse101 + cse102\1-1 project\igraphics-workspace\glaux.h
+1648926144 d:\buet\l1t1\cse101 + cse102\1-1 project\igraphics-workspace\glaux.h
 	<windows.h>
 	<GL/gl.h>
 	<GL/glu.h>
 
-1563893532 d:\buet\l1t1\cse101 + cse102\1-1 project\igraphics-workspace\gl.h
+1648926144 d:\buet\l1t1\cse101 + cse102\1-1 project\igraphics-workspace\gl.h
+
+1648957688 source:d:\buet\l1t1\cse101 + cse102\1-1 project\igraphics-workspace\imain3.cpp
+	"iGraphics.h"
+	"gl.h"
+	<math.h>
 

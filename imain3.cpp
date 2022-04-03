@@ -8,6 +8,7 @@ char buttons[2][100] = {"assets\\buttonProjectile.bmp", "assets\\buttonPendulum.
 char project_name[200] = "Projectile and Pendulum Simulator";
 bool proj = false;
 bool pendulum = false;
+bool home = true;
 
 int homepage_width = 1080;
 int homepage_height = 480;
@@ -19,7 +20,7 @@ int screen_height = 500;
 
 ///variables needed for projectile.
 double init_x=450,init_y=10;
-double x=init_x , y=init_y , r = 20;
+double x=init_x, y=init_y, r = 20;
 double red=0,green=0,blue=255;
 double Pi=acos(-1);
 double g=9.81/10;
@@ -27,7 +28,8 @@ double v;
 double scr_width=1800,scr_height=800;
 bool projectile=0;
 double theta;
-typedef struct {
+typedef struct
+{
     double x;
     double y;
     double vel;
@@ -35,12 +37,13 @@ typedef struct {
     double vel_y;
     double acc_x;
     double acc_y;
-}motion;
+} motion;
 
-typedef struct{
+typedef struct
+{
     double x;
     double y;
-}coordinate;
+} coordinate;
 
 motion *ball=(motion*)malloc(sizeof(motion));
 coordinate motion_curve[100];
@@ -95,8 +98,9 @@ bob bob1;
 */
 void iDraw()
 {
-    if((proj == false) && (pendulum == false))
+    if(home)
     {
+        iClear();
         iShowBMP(0, 0, homepage);
         iShowBMP((homepage_width/2 - 300), 100, buttons[0]);
         iShowBMP((homepage_width/2 + 140), 100, buttons[1]);
@@ -151,7 +155,7 @@ void iMouseMove(int mx, int my)
     //printf("x = %d, y= %d\n",mx,my);
     //place your codes here
 
-    if((proj == false) && (pendulum == false))
+    if(home)
     {
         if((my >= 50) && (my <= 130))
         {
@@ -165,6 +169,7 @@ void iMouseMove(int mx, int my)
                 printf("%f %f", mx, my);
                 pendulum = true;
             }
+            home = false;
         }
     }
 
@@ -227,14 +232,16 @@ void iMouse(int button, int state, int mx, int my)
 */
 void iKeyboard(unsigned char key)
 {
-    if((proj == false) && (pendulum == false))
+    if(home)
     {
         if(key == '1')
         {
+            home = false;
             proj = true;
         }
         else if(key == '2')
         {
+            home = false;
             pendulum = true;
         }
     }
@@ -244,6 +251,7 @@ void iKeyboard(unsigned char key)
         if(key == 's')
         {
             projectile=1;
+
         }
         else if(key == 'p')
         {
@@ -260,10 +268,12 @@ void iKeyboard(unsigned char key)
             fprintf(fp,"The current vertical acceleration of the ball is  : %0.2lf\n",ball->acc_y);
             fprintf(fp,"The highest vertical distance of the ball is      : %0.2lf\n",v*v*sin(theta)*sin(theta)/2*g);
             fclose(fp);
+
         }
         else if(key == 'r')
         {
             iResumeTimer(0);
+
         }
     }
 
@@ -316,12 +326,73 @@ void iKeyboard(unsigned char key)
 void iSpecialKeyboard(unsigned char key)
 {
 
-    if(key == GLUT_KEY_END)
+    if(key == GLUT_KEY_HOME)
+    {
+        home = true;
+        proj = false;
+        pendulum = false;
+    }
+
+    else if(key == GLUT_KEY_END)
     {
         exit(0);
     }
     //place your codes for other keys here
 }
+
+
+void change()
+{
+    if(proj)
+    {
+        if(projectile)
+        {
+            if(theta>0)x+=dx;
+            else x-=dx;
+            if(theta!=Pi/2)y=((x-init_x)*tan(theta))-((g*(x-init_x)*(x-init_x))/(2*v*v*cos(theta)*cos(theta)))+init_y;
+            else
+            {
+                y=(v*dt)-(0.5*g*dt*dt)+init_y;
+                dt++;
+            }
+            ball->x=x;
+            ball->y=y;
+            ball->vel_x=v*cos(theta);
+            ball->vel_y=v*sin(theta)-(g*dt_1);
+            ball->acc_x=0;
+            ball->acc_y=-g;
+            ball->vel=sqrt((ball->vel_x*ball->vel_x)+(ball->vel_y*ball->vel_y));
+            potential=mass*g*y;
+            kinetic=0.5*g*ball->vel_y*ball->vel_y;
+            dt_1++;
+            if(y<0)
+            {
+                x=init_x;
+                y=init_y;
+                projectile=0;
+                dt=1;
+                dt_1=1;
+            }
+        }
+    }
+
+    else if(pendulum)
+    {
+        if(startPendulum)
+        {
+            bob1.x = bob1.Amplitude * cos((bob1.freq*timetracker));
+            bob1.y = effectiveLength - sqrt((effectiveLength*effectiveLength) - (bob1.x*bob1.x));
+            timetracker += 1;
+        }
+        else if(reset)
+        {
+            timetracker = 0;
+            reset = !reset;
+        }
+    }
+}
+
+/*
 
 void change_projectile()
 {
@@ -354,6 +425,7 @@ void change_projectile()
             dt_1=1;
         }
     }
+
 }
 
 void change_pendulum()
@@ -365,7 +437,7 @@ void change_pendulum()
         bob1.y = effectiveLength - sqrt((effectiveLength*effectiveLength) - (bob1.x*bob1.x));
         timetracker += 1;
     }
-    if(reset)
+    else if(reset)
     {
         timetracker = 0;
         reset = !reset;
@@ -374,23 +446,30 @@ void change_pendulum()
 
 
 }
+*/
 
 int main()
 {
     //place your own initialization codes here.
 
-    iInitialize(homepage_width, homepage_height, project_name);
+/*
 
     if(pendulum)
     {
         iSetTimer(50, change_pendulum);
-        iInitialize(screen_width, screen_height, "Pendulum Simulator");
+        //iInitialize(screen_width, screen_height, "Pendulum Simulator");
     }
 
     else if(proj)
     {
-        iSetTimer(10,change_projectile);
-        iInitialize(scr_width, scr_height, "My main screen");
+        iSetTimer(10, change_projectile);
+        //iInitialize(scr_width, scr_height, "My main screen");
     }
+
+*/
+    iSetTimer(10, change);
+    iInitialize(homepage_width, homepage_height, project_name);
+
+
     return 0;
 }

@@ -57,7 +57,7 @@
 			<Add after="xcopy /y OpenGL\DLL\glut32.dll $TARGET_OUTPUT_DIR" />
 		</ExtraCommands>
 		<Unit filename="iGraphics.h" />
-		<Unit filename="iMain.cpp" />
+		<Unit filename="imain3.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
