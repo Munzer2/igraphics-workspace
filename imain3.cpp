@@ -2,29 +2,21 @@
 # include "gl.h"
 #include<math.h>
 
-<<<<<<< HEAD
+
 char homepage[100] = "assets\\homepage.bmp";
 char buttons[2][100] = {"assets\\buttonProjectile.bmp", "assets\\buttonPendulum.bmp"};
 //char homepage[100] = "homepage.bmp";
 //char buttons[2][100] = {"buttonProjectile.bmp", "buttonPendulum.bmp"};
-=======
-char homepage[100] = "homepage.bmp";
-char buttons[2][100] = {"buttonProjectile.bmp", "buttonPendulum.bmp"};
->>>>>>> c8732411787436dd791c287ed16c17fa7833a37d
+
 
 char project_name[200] = "Projectile and Pendulum Simulator";
 bool proj = false;
 bool pendulum = false;
 bool home = true;
 
-<<<<<<< HEAD
 double scr_width = 1800;
 double scr_height = 800;
-=======
 
-double scr_width=1800,scr_height=800;
-
->>>>>>> c8732411787436dd791c287ed16c17fa7833a37d
 
 ///variables needed for projectile.
 double init_x=450,init_y=10;
@@ -121,11 +113,8 @@ void iDraw()
         iClear();
         iSetColor(255, 255, 255);
         iLine((scr_width-200)/2, (scr_height-50), (scr_width+200)/2, (scr_height-50));
-<<<<<<< HEAD
         iText(200, 200, pendInstruction1, GLUT_BITMAP_HELVETICA_18);
         iText(200, 170, pendInstruction2, GLUT_BITMAP_HELVETICA_18);
-=======
->>>>>>> c8732411787436dd791c287ed16c17fa7833a37d
         iLine(scr_width/2, (scr_height-50), (scr_width/2) + bob1.x, (scr_height- 50 - effectiveLength + bob1.y));
         iSetColor(255, 255, 0);
         iLine(scr_width/2, (scr_height-50), scr_width/2, (scr_height-50 - effectiveLength));
@@ -135,10 +124,7 @@ void iDraw()
         iLine((scr_width/2) + bob1.x, (scr_height- 50 - effectiveLength + bob1.y), (scr_width/2), (scr_height- 50 - effectiveLength + bob1.y));
         iSetColor(105, 105, 105);
         iFilledRectangle(50, (scr_height - 350), 200, 300);
-<<<<<<< HEAD
 
-=======
->>>>>>> c8732411787436dd791c287ed16c17fa7833a37d
     }
 
     else if(proj)
@@ -418,10 +404,7 @@ int main()
 
     iSetTimer(10, change);
     iInitialize(scr_width, scr_height, project_name);
-<<<<<<< HEAD
-=======
 
->>>>>>> c8732411787436dd791c287ed16c17fa7833a37d
 
     return 0;
 }
