@@ -2,16 +2,16 @@
 # include "gl.h"
 #include<math.h>
 
-char homepage[100] = "assets\\homepage.bmp";
-char buttons[2][100] = {"assets\\buttonProjectile.bmp", "assets\\buttonPendulum.bmp"};
+char homepage[100] = "homepage.bmp";
+char buttons[2][100] = {"buttonProjectile.bmp", "buttonPendulum.bmp"};
 
 char project_name[200] = "Projectile and Pendulum Simulator";
 bool proj = false;
 bool pendulum = false;
 bool home = true;
 
-int homepage_width = 1080;
-int homepage_height = 480;
+int homepage_width = 1800;
+int homepage_height = 800;
 
 int screen_width = 1100;
 int screen_height = 500;
@@ -102,24 +102,24 @@ void iDraw()
     {
         iClear();
         iShowBMP(0, 0, homepage);
-        iShowBMP((homepage_width/2 - 300), 100, buttons[0]);
-        iShowBMP((homepage_width/2 + 140), 100, buttons[1]);
+        iShowBMP((scr_width/2 - 300), 100, buttons[0]);
+        iShowBMP((scr_width/2 + 140), 100, buttons[1]);
     }
 
     else if(pendulum)
     {
         iClear();
         iSetColor(255, 255, 255);
-        iLine((screen_width-200)/2, (screen_height-50), (screen_width+200)/2, (screen_height-50));
-        iLine(screen_width/2, (screen_height-50), (screen_width/2) + bob1.x, (screen_height- 50 - effectiveLength + bob1.y));
+        iLine((scr_width-200)/2, (scr_height-50), (scr_width+200)/2, (scr_height-50));
+        iLine(scr_width/2, (scr_height-50), (scr_width/2) + bob1.x, (scr_height- 50 - effectiveLength + bob1.y));
         iSetColor(255, 255, 0);
-        iLine(screen_width/2, (screen_height-50), screen_width/2, (screen_height-50 - effectiveLength));
+        iLine(scr_width/2, (scr_height-50), scr_width/2, (scr_height-50 - effectiveLength));
         iSetColor(127, 127, 127);
-        iFilledCircle((screen_width/2) + bob1.x, (screen_height- 50 - effectiveLength + bob1.y), 15, 1000);
+        iFilledCircle((scr_width/2) + bob1.x, (scr_height- 50 - effectiveLength + bob1.y), 15, 1000);
         iSetColor(255, 0, 0);
-        iLine((screen_width/2) + bob1.x, (screen_height- 50 - effectiveLength + bob1.y), (screen_width/2), (screen_height- 50 - effectiveLength + bob1.y));
+        iLine((scr_width/2) + bob1.x, (scr_height- 50 - effectiveLength + bob1.y), (scr_width/2), (scr_height- 50 - effectiveLength + bob1.y));
         iSetColor(105, 105, 105);
-        iFilledRectangle(50, (screen_height - 350), 200, 300);
+        iFilledRectangle(50, (scr_height - 350), 200, 300);
     }
 
     else if(proj)
@@ -136,10 +136,10 @@ void iDraw()
         }
         iSetColor(255,255,255);
         iRectangle(10,10,290,900);
-        iSetColor(255,255,0);
-        iFilledRectangle(50,10,80,potential);
         if(projectile)
         {
+            iSetColor(255,255,0);
+            iFilledRectangle(50,10,80,potential);
             iSetColor(255,0,0);
             iFilledRectangle(150,10,80,kinetic);
         }
@@ -159,12 +159,12 @@ void iMouseMove(int mx, int my)
     {
         if((my >= 50) && (my <= 130))
         {
-            if((mx >= homepage_width/2 - 300) && (mx <= homepage_width/2 - 140))
+            if((mx >= scr_width/2 - 300) && (mx <= scr_width/2 - 140))
             {
                 printf("%f %f", mx, my);
                 proj = true;
             }
-            else if((mx >= homepage_width/2 + 140) && (mx <= homepage_width/2 + 300))
+            else if((mx >= scr_width/2 + 140) && (mx <= scr_width/2 + 300))
             {
                 printf("%f %f", mx, my);
                 pendulum = true;
@@ -468,7 +468,7 @@ int main()
 
 */
     iSetTimer(10, change);
-    iInitialize(homepage_width, homepage_height, project_name);
+    iInitialize(scr_width, scr_height, project_name);
 
 
     return 0;
