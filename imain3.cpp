@@ -358,7 +358,7 @@ void change()
             ball->acc_y=-g;
             ball->vel=sqrt((ball->vel_x*ball->vel_x)+(ball->vel_y*ball->vel_y));
             potential=mass*g*y;
-            kinetic=0.5*mass*g*ball->vel_y*ball->vel_y;
+            kinetic=0.5*mass*ball->vel_y*ball->vel_y;
             dt_1++;
             if(y<0)
             {
