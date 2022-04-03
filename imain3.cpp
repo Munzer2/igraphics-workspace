@@ -2,7 +2,7 @@
 # include "gl.h"
 #include<math.h>
 
-char homepage[100] = "assets\\homepage.bmp";
+char homepage[100] = "assets\\homepage1.bmp";
 char buttons[2][100] = {"assets\\buttonProjectile.bmp", "assets\\buttonPendulum.bmp"};
 
 char project_name[200] = "Projectile and Pendulum Simulator";
@@ -10,13 +10,8 @@ bool proj = false;
 bool pendulum = false;
 bool home = true;
 
-int homepage_width = 1080;
-int homepage_height = 480;
-
-int screen_width = 1100;
-int screen_height = 500;
-
-
+int scr_width = 1800;
+int scr_height = 800;
 
 ///variables needed for projectile.
 double init_x=450,init_y=10;
@@ -25,7 +20,6 @@ double red=0,green=0,blue=255;
 double Pi=acos(-1);
 double g=9.81/10;
 double v;
-double scr_width=1800,scr_height=800;
 bool projectile=0;
 double theta;
 typedef struct
@@ -78,6 +72,9 @@ double effectiveLength = 400;
 double ampAngle = Pi/4;
 double timetracker = 0;
 
+char pendInstruction1[500] = "Press 's' to set the pendulum in the starting position.";
+char pendInstruction2[500] = "Press 'Space' to start or pause the pendulum's motion.";
+
 typedef struct BOB
 {
     double x = 0;
@@ -102,24 +99,27 @@ void iDraw()
     {
         iClear();
         iShowBMP(0, 0, homepage);
-        iShowBMP((homepage_width/2 - 300), 100, buttons[0]);
-        iShowBMP((homepage_width/2 + 140), 100, buttons[1]);
+        iShowBMP((scr_width/2 - 300), 100, buttons[0]);
+        iShowBMP((scr_width/2 + 140), 100, buttons[1]);
     }
 
     else if(pendulum)
     {
         iClear();
         iSetColor(255, 255, 255);
-        iLine((screen_width-200)/2, (screen_height-50), (screen_width+200)/2, (screen_height-50));
-        iLine(screen_width/2, (screen_height-50), (screen_width/2) + bob1.x, (screen_height- 50 - effectiveLength + bob1.y));
+        iLine((scr_width-200)/2, (scr_height-50), (scr_width+200)/2, (scr_height-50));
+        iText(200, 200, pendInstruction1, GLUT_BITMAP_HELVETICA_18);
+        iText(200, 170, pendInstruction2, GLUT_BITMAP_HELVETICA_18);
+        iLine(scr_width/2, (scr_height-50), (scr_width/2) + bob1.x, (scr_height- 50 - effectiveLength + bob1.y));
         iSetColor(255, 255, 0);
-        iLine(screen_width/2, (screen_height-50), screen_width/2, (screen_height-50 - effectiveLength));
+        iLine(scr_width/2, (scr_height-50), scr_width/2, (scr_height-50 - effectiveLength));
         iSetColor(127, 127, 127);
-        iFilledCircle((screen_width/2) + bob1.x, (screen_height- 50 - effectiveLength + bob1.y), 15, 1000);
+        iFilledCircle((scr_width/2) + bob1.x, (scr_height- 50 - effectiveLength + bob1.y), 15, 1000);
         iSetColor(255, 0, 0);
-        iLine((screen_width/2) + bob1.x, (screen_height- 50 - effectiveLength + bob1.y), (screen_width/2), (screen_height- 50 - effectiveLength + bob1.y));
+        iLine((scr_width/2) + bob1.x, (scr_height- 50 - effectiveLength + bob1.y), (scr_width/2), (scr_height- 50 - effectiveLength + bob1.y));
         iSetColor(105, 105, 105);
-        iFilledRectangle(50, (screen_height - 350), 200, 300);
+        iFilledRectangle(50, (scr_height - 350), 200, 300);
+
     }
 
     else if(proj)
@@ -159,12 +159,12 @@ void iMouseMove(int mx, int my)
     {
         if((my >= 50) && (my <= 130))
         {
-            if((mx >= homepage_width/2 - 300) && (mx <= homepage_width/2 - 140))
+            if((mx >= scr_width/2 - 300) && (mx <= scr_width/2 - 140))
             {
                 printf("%f %f", mx, my);
                 proj = true;
             }
-            else if((mx >= homepage_width/2 + 140) && (mx <= homepage_width/2 + 300))
+            else if((mx >= scr_width/2 + 140) && (mx <= scr_width/2 + 300))
             {
                 printf("%f %f", mx, my);
                 pendulum = true;
@@ -382,7 +382,7 @@ void change()
         {
             bob1.x = bob1.Amplitude * cos((bob1.freq*timetracker));
             bob1.y = effectiveLength - sqrt((effectiveLength*effectiveLength) - (bob1.x*bob1.x));
-            timetracker += 1;
+            timetracker += 0.5;
         }
         else if(reset)
         {
@@ -392,84 +392,13 @@ void change()
     }
 }
 
-/*
-
-void change_projectile()
-{
-    if(projectile)
-    {
-        if(theta>0)x+=dx;
-        else x-=dx;
-        if(theta!=Pi/2)y=((x-init_x)*tan(theta))-((g*(x-init_x)*(x-init_x))/(2*v*v*cos(theta)*cos(theta)))+init_y;
-        else
-        {
-            y=(v*dt)-(0.5*g*dt*dt)+init_y;
-            dt++;
-        }
-        ball->x=x;
-        ball->y=y;
-        ball->vel_x=v*cos(theta);
-        ball->vel_y=v*sin(theta)-(g*dt_1);
-        ball->acc_x=0;
-        ball->acc_y=-g;
-        ball->vel=sqrt((ball->vel_x*ball->vel_x)+(ball->vel_y*ball->vel_y));
-        potential=mass*g*y;
-        kinetic=0.5*g*ball->vel_y*ball->vel_y;
-        dt_1++;
-        if(y<0)
-        {
-            x=init_x;
-            y=init_y;
-            projectile=0;
-            dt=1;
-            dt_1=1;
-        }
-    }
-
-}
-
-void change_pendulum()
-{
-
-    if(startPendulum)
-    {
-        bob1.x = bob1.Amplitude * cos((bob1.freq*timetracker));
-        bob1.y = effectiveLength - sqrt((effectiveLength*effectiveLength) - (bob1.x*bob1.x));
-        timetracker += 1;
-    }
-    else if(reset)
-    {
-        timetracker = 0;
-        reset = !reset;
-    }
-
-
-
-}
-*/
 
 int main()
 {
     //place your own initialization codes here.
 
-/*
-
-    if(pendulum)
-    {
-        iSetTimer(50, change_pendulum);
-        //iInitialize(screen_width, screen_height, "Pendulum Simulator");
-    }
-
-    else if(proj)
-    {
-        iSetTimer(10, change_projectile);
-        //iInitialize(scr_width, scr_height, "My main screen");
-    }
-
-*/
     iSetTimer(10, change);
-    iInitialize(homepage_width, homepage_height, project_name);
-
+    iInitialize(scr_width, scr_height, project_name);
 
     return 0;
 }
