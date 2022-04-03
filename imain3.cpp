@@ -2,16 +2,18 @@
 # include "gl.h"
 #include<math.h>
 
-char homepage[100] = "assets\\homepage1.bmp";
+char homepage[100] = "assets\\homepage.bmp";
 char buttons[2][100] = {"assets\\buttonProjectile.bmp", "assets\\buttonPendulum.bmp"};
+//char homepage[100] = "homepage.bmp";
+//char buttons[2][100] = {"buttonProjectile.bmp", "buttonPendulum.bmp"};
 
 char project_name[200] = "Projectile and Pendulum Simulator";
 bool proj = false;
 bool pendulum = false;
 bool home = true;
 
-int scr_width = 1800;
-int scr_height = 800;
+double scr_width = 1800;
+double scr_height = 800;
 
 ///variables needed for projectile.
 double init_x=450,init_y=10;
