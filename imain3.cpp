@@ -10,12 +10,8 @@ bool proj = false;
 bool pendulum = false;
 bool home = true;
 
-int homepage_width = 1800;
-int homepage_height = 800;
 
-int screen_width = 1100;
-int screen_height = 500;
-
+double scr_width=1800,scr_height=800;
 
 
 ///variables needed for projectile.
@@ -25,7 +21,6 @@ double red=0,green=0,blue=255;
 double Pi=acos(-1);
 double g=9.81/10;
 double v;
-double scr_width=1800,scr_height=800;
 bool projectile=0;
 double theta;
 typedef struct
@@ -55,7 +50,7 @@ double obj_line_x;
 double obj_line_y;
 
 
-double mass=2;
+double mass=1;
 double potential;
 double kinetic;
 double dx,dy;
