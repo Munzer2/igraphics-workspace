@@ -66,12 +66,14 @@ char str1[100]="Adjust your mouse line to set velocity and velocity angle accord
 double starting_x = 20;
 double starting_y = 10;
 double g_pen = 9.81;
-double angle = Pi/4;
 bool startPendulum = false;
 bool reset = false;
 double effectiveLength = 400;
-double ampAngle = Pi/4;
+double ampAngle = Pi/10;
 double timetracker = 0;
+char inst1[500] = "Press 's' to set the pendulum at the starting position.";
+char inst2[500] = "Press 'Space' to start or pause the simulation.";
+char return_to_home[500] = "Press 'Home' to return to Homepage.";
 
 typedef struct BOB
 {
@@ -84,6 +86,9 @@ typedef struct BOB
     double acc = (-1)*freq*freq*(x);
     double k = (mass*g_pen)/effectiveLength;
     double period = (2*Pi)/freq;
+    double kineticEnergy = 0.5*mass*v*v;
+    double potentialEnergy = 0.5*k*x*x;
+    double totalEnergy = kineticEnergy + potentialEnergy;
 } bob;
 
 bob bob1;
@@ -105,6 +110,9 @@ void iDraw()
     {
         iClear();
         iSetColor(255, 255, 255);
+        iText(70, 150, inst1, GLUT_BITMAP_HELVETICA_18);
+        iText(70, 120, inst2, GLUT_BITMAP_HELVETICA_18);
+        iText(70, 90, return_to_home, GLUT_BITMAP_HELVETICA_18);
         iLine((scr_width-200)/2, (scr_height-50), (scr_width+200)/2, (scr_height-50));
         iLine(scr_width/2, (scr_height-50), (scr_width/2) + bob1.x, (scr_height- 50 - effectiveLength + bob1.y));
         iSetColor(255, 255, 0);
@@ -113,8 +121,47 @@ void iDraw()
         iFilledCircle((scr_width/2) + bob1.x, (scr_height- 50 - effectiveLength + bob1.y), 15, 1000);
         iSetColor(255, 0, 0);
         iLine((scr_width/2) + bob1.x, (scr_height- 50 - effectiveLength + bob1.y), (scr_width/2), (scr_height- 50 - effectiveLength + bob1.y));
-        iSetColor(105, 105, 105);
-        iFilledRectangle(50, (scr_height - 350), 200, 300);
+        iRectangle(50, (scr_height - 350), 550, 320);
+
+        ///showing information here
+
+        iSetColor(255, 255, 255);
+        char periodInfo[1000] = "Time Period (in seconds) : ";
+        char t_string[200];
+        snprintf(t_string, 200, "%0.2lf", bob1.period);
+        strcat(periodInfo, t_string);
+        iText(60, (scr_height - 70), periodInfo, GLUT_BITMAP_HELVETICA_18);
+        char displacementInfo[1000] = "Current displacement (in meters) : ";
+        char x_string[200];
+        snprintf(x_string, 200, "%0.2lf", bob1.x);
+        strcat(displacementInfo, x_string);
+        iText(60, (scr_height - 100), displacementInfo, GLUT_BITMAP_HELVETICA_18);
+        char velocityInfo[1000] = "Current velocity (in m/s) : ";
+        char v_string[200];
+        snprintf(v_string, 200, "%0.2lf", bob1.v);
+        strcat(velocityInfo, v_string);
+        iText(60, (scr_height - 130), velocityInfo, GLUT_BITMAP_HELVETICA_18);
+        char accInfo[1000] = "Current acceleration (in m/s*s) : ";
+        char a_string[200];
+        snprintf(a_string, 200, "%0.2lf", bob1.acc);
+        strcat(accInfo, a_string);
+        iText(60, (scr_height - 160), accInfo, GLUT_BITMAP_HELVETICA_18);
+        char KEInfo[1000] = "Current Kinetic Energy (in Joules) : ";
+        char ke_string[200];
+        snprintf(ke_string, 200, "%0.2lf", bob1.kineticEnergy);
+        strcat(KEInfo, ke_string);
+        iText(60, (scr_height - 190), KEInfo, GLUT_BITMAP_HELVETICA_18);
+        char PEInfo[1000] = "Current Potential Energy (in Joules) : ";
+        char pe_string[200];
+        snprintf(pe_string, 200, "%0.2lf", bob1.potentialEnergy);
+        strcat(PEInfo, pe_string);
+        iText(60, (scr_height - 220), PEInfo, GLUT_BITMAP_HELVETICA_18);
+        char TEInfo[1000] = "Current Total Energy (in Joules) : ";
+        char te_string[200];
+        snprintf(te_string, 200, "%0.2lf", bob1.totalEnergy);
+        strcat(TEInfo, te_string);
+        iText(60, (scr_height - 250), TEInfo, GLUT_BITMAP_HELVETICA_18);
+
     }
 
     else if(proj)
@@ -128,6 +175,7 @@ void iDraw()
             iLine(object_origin_x,object_origin_y,obj_line_x,obj_line_y);
             iText(500,700,str,GLUT_BITMAP_HELVETICA_18);
             iText(500,680,str1,GLUT_BITMAP_HELVETICA_18);
+            iText(500,660,return_to_home,GLUT_BITMAP_HELVETICA_18);
         }
         iSetColor(255,255,255);
         iRectangle(10,10,290,900);
@@ -280,6 +328,11 @@ void iKeyboard(unsigned char key)
             startPendulum = false;
             bob1.x = bob1.Amplitude;
             bob1.y = effectiveLength*(1 - cos(ampAngle));
+            bob1.v = bob1.freq*sqrt((bob1.Amplitude*bob1.Amplitude) - (bob1.x*bob1.x));
+            bob1.acc = (-1)*bob1.freq*bob1.freq*(bob1.x);
+            bob1.kineticEnergy = 0.5*bob1.mass*bob1.v*bob1.v;
+            bob1.potentialEnergy = 0.5*bob1.k*bob1.x*bob1.x;
+            bob1.totalEnergy = bob1.kineticEnergy + bob1.potentialEnergy;
         }
         else if(key == ' ')
         {
@@ -377,7 +430,12 @@ void change()
         {
             bob1.x = bob1.Amplitude * cos((bob1.freq*timetracker));
             bob1.y = effectiveLength - sqrt((effectiveLength*effectiveLength) - (bob1.x*bob1.x));
-            timetracker += 1;
+            bob1.v = bob1.freq*sqrt((bob1.Amplitude*bob1.Amplitude) - (bob1.x*bob1.x));
+            bob1.acc = (-1)*bob1.freq*bob1.freq*(bob1.x);
+            bob1.kineticEnergy = 0.5*bob1.mass*bob1.v*bob1.v;
+            bob1.potentialEnergy = 0.5*bob1.k*bob1.x*bob1.x;
+            bob1.totalEnergy = bob1.kineticEnergy + bob1.potentialEnergy;
+            timetracker += 0.1;
         }
         else if(reset)
         {
