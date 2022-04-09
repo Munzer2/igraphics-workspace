@@ -670,7 +670,7 @@ int main()
             //iInitialize(scr_width, scr_height, "My main screen");
         }
 
-
+    */
     iSetTimer(25, change);
 
     iInitialize(scr_width, scr_height, project_name);
