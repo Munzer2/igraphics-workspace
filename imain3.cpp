@@ -20,7 +20,7 @@ double x=init_x, y=init_y, r = 20;
 double red=0,green=0,blue=255;
 double Pi=acos(-1);
 double g=9.81/10;
-double v;
+double v=0;
 bool projectile=0;
 double theta;
 typedef struct
@@ -33,6 +33,8 @@ typedef struct
     double acc_x;
     double acc_y;
 } motion;
+
+bool before_first_throw=0;
 
 typedef struct
 {
@@ -219,14 +221,75 @@ void iDraw()
             iText(500,660,return_to_home,GLUT_BITMAP_HELVETICA_18);
         }
         iSetColor(255,255,255);
-        iRectangle(10,10,290,900);
+        iRectangle(10,100,290,670);
         if(projectile)
         {
             iSetColor(255,255,0);
-            iFilledRectangle(50,10,80,potential);
+            iFilledRectangle(30,100,80,potential);
             iSetColor(255,0,0);
-            iFilledRectangle(150,10,80,kinetic);
+            iFilledRectangle(180,100,80,kinetic);
         }
+        iSetColor(255,0,0);
+        iRectangle(1360,520,scr_width-1380,250);
+        char str_poten[100]="POTENTIAL";
+        char str_kinetic[100]="KINETIC";
+        iSetColor(255,255,255);
+        iText(5,80,str_poten,GLUT_BITMAP_TIMES_ROMAN_24);
+        iText(180,80,str_kinetic,GLUT_BITMAP_TIMES_ROMAN_24);
+        ///showing motion infos here.
+
+        iSetColor(255,255,255);
+        char x_pos_info[100]="X Coordinate is: ";
+        char x_pos[100];
+        snprintf(x_pos,100,"%0.2lf",ball->x);
+        strcat(x_pos_info,x_pos);
+        iText(1370,750,x_pos_info,GLUT_BITMAP_HELVETICA_18);
+        char y_pos_info[100]="Y Coordinate is: ";
+        char y_pos[100];
+        snprintf(y_pos,100,"%0.2lf",ball->y);
+        strcat(y_pos_info,y_pos);
+        iText(1370,730,y_pos_info,GLUT_BITMAP_HELVETICA_18);
+        char vel_x_info[100]="Velocity along x-axis is: ";
+        char vel_x[100];
+        snprintf(vel_x,100,"%0.2lf",ball->vel_x);
+        strcat(vel_x_info,vel_x);
+        if(!before_first_throw) iText(1370,710,"Velocity along x-axis is: 0.00",GLUT_BITMAP_HELVETICA_18);
+        else iText(1370,710,vel_x_info,GLUT_BITMAP_HELVETICA_18);
+        char vel_y_info[100]="Velocity along y-axis is: ";
+        char vel_y[100];
+        snprintf(vel_y,100,"%0.2lf",ball->vel_y);
+        strcat(vel_y_info,vel_y);
+        if(!before_first_throw) iText(1370,690,"Velocity along y-axis is: 0.00",GLUT_BITMAP_HELVETICA_18);
+        else iText(1370,690,vel_y_info,GLUT_BITMAP_HELVETICA_18);
+        char potential_info[100]="The potential energy is:";
+        char potential_current[100];
+        snprintf(potential_current,100,"%0.2lf",potential);
+        strcat(potential_info,potential_current);
+        iText(1370,670,potential_info,GLUT_BITMAP_HELVETICA_18);
+        char kinetic_info[100]="The kinetic energy is:";
+        char kinetic_current[100];
+        snprintf(kinetic_current,100,"%0.2lf",kinetic);
+        strcat(kinetic_info,kinetic_current);
+        iText(1370,650,kinetic_info,GLUT_BITMAP_HELVETICA_18);
+        char acceleration_info_x[100]="The acc. along x-axis is:0";
+        iText(1370,630,acceleration_info_x,GLUT_BITMAP_HELVETICA_18);
+        char acceleration_info_y[100]="The acc. along y-axis is: 0.981";
+        iText(1370,610,acceleration_info_y,GLUT_BITMAP_HELVETICA_18);
+        char theta_info[100]="The angle of projection is: ";
+        char theta_ball[100];
+        snprintf(theta_ball,100,"%0.2lf",theta*180/Pi);
+        strcat(theta_info,theta_ball);
+        iText(1370,590,theta_info,GLUT_BITMAP_HELVETICA_18);
+        char maximum_horizon_info[100]="The maximum horizontal distance:";
+        char maximum_horizon[100];
+        snprintf(maximum_horizon,100,"%0.2lf",v*v*sin(2*theta)/g);
+        strcat(maximum_horizon_info,maximum_horizon);
+        iText(1370,570,maximum_horizon_info,GLUT_BITMAP_HELVETICA_18);
+        char maximum_vertical_info[100]="The maximum vertical distance:";
+        char maximum_vertical[100];
+        snprintf(maximum_vertical,100,"%0.2lf",v*v*sin(theta)*sin(theta)/2*g);
+        strcat(maximum_vertical_info,maximum_vertical);
+        iText(1370,550,maximum_vertical_info,GLUT_BITMAP_HELVETICA_18);
     }
 }
 
@@ -335,7 +398,7 @@ void iKeyboard(unsigned char key)
         if(key == 's')
         {
             projectile=1;
-
+            before_first_throw=1;
         }
         else if(key == 'p')
         {
@@ -469,6 +532,15 @@ void change()
     {
         if(projectile)
         {
+            ball->x=x;
+            ball->y=y;
+            ball->vel_x=v*cos(theta);
+            ball->vel_y=abs(v*sin(theta))-(g*dt_1);
+            ball->acc_x=0;
+            ball->acc_y=-g;
+            ball->vel=sqrt((ball->vel_x*ball->vel_x)+(ball->vel_y*ball->vel_y));
+            potential=mass*g*y/2;
+            kinetic=0.5*mass*ball->vel*ball->vel/2;
             if(theta>0)x+=dx;
             else x-=dx;
             if(theta!=Pi/2)y=((x-init_x)*tan(theta))-((g*(x-init_x)*(x-init_x))/(2*v*v*cos(theta)*cos(theta)))+init_y;
@@ -477,15 +549,6 @@ void change()
                 y=(v*dt)-(0.5*g*dt*dt)+init_y;
                 dt++;
             }
-            ball->x=x;
-            ball->y=y;
-            ball->vel_x=v*cos(theta);
-            ball->vel_y=abs(v*sin(theta))-(g*dt_1);
-            ball->acc_x=0;
-            ball->acc_y=-g;
-            ball->vel=sqrt((ball->vel_x*ball->vel_x)+(ball->vel_y*ball->vel_y));
-            potential=mass*g*y;
-            kinetic=0.5*mass*ball->vel_y*ball->vel_y;
             dt_1++;
             if(y<0)
             {
@@ -494,6 +557,15 @@ void change()
                 projectile=0;
                 dt=1;
                 dt_1=1;
+                ball->x=x;
+                ball->y=y;
+                ball->vel_x=0;
+                ball->vel_y=0;
+                ball->acc_x=0;
+                ball->acc_y=-g;
+                ball->vel=sqrt((ball->vel_x*ball->vel_x)+(ball->vel_y*ball->vel_y));
+                potential=0;
+                kinetic=0;
             }
         }
     }
@@ -598,8 +670,9 @@ int main()
             //iInitialize(scr_width, scr_height, "My main screen");
         }
 
-    */
+
     iSetTimer(25, change);
+
     iInitialize(scr_width, scr_height, project_name);
 
 
