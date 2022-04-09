@@ -74,21 +74,23 @@ double timetracker = 0;
 char inst1[500] = "Press 's' to set the pendulum at the starting position.";
 char inst2[500] = "Press 'Space' to start or pause the simulation.";
 char return_to_home[500] = "Press 'Home' to return to Homepage.";
+double timedef = 0.5;
 
 typedef struct BOB
 {
+    double radius = 15;
     double x = 0;
     double y = 0;
     double mass = 1;
     double Amplitude = (effectiveLength)*sin(ampAngle);
     double freq = sqrt(g_pen/effectiveLength);
-    double v = freq*sqrt((Amplitude*Amplitude) - (x*x));
-    double acc = (-1)*freq*freq*(x);
+    double v = 0;
+    double acc = 0;
     double k = (mass*g_pen)/effectiveLength;
     double period = (2*Pi)/freq;
-    double kineticEnergy = 0.5*mass*v*v;
-    double potentialEnergy = 0.5*k*x*x;
-    double totalEnergy = kineticEnergy + potentialEnergy;
+    double kineticEnergy = 0;
+    double potentialEnergy = 0;
+    double totalEnergy = 0;
 } bob;
 
 bob bob1;
@@ -118,49 +120,88 @@ void iDraw()
         iSetColor(255, 255, 0);
         iLine(scr_width/2, (scr_height-50), scr_width/2, (scr_height-50 - effectiveLength));
         iSetColor(127, 127, 127);
-        iFilledCircle((scr_width/2) + bob1.x, (scr_height- 50 - effectiveLength + bob1.y), 15, 1000);
+        iFilledCircle((scr_width/2) + bob1.x, (scr_height- 50 - effectiveLength + bob1.y), bob1.radius, 1000);
         iSetColor(255, 0, 0);
         iLine((scr_width/2) + bob1.x, (scr_height- 50 - effectiveLength + bob1.y), (scr_width/2), (scr_height- 50 - effectiveLength + bob1.y));
         iRectangle(50, (scr_height - 350), 550, 320);
+        iRectangle((scr_width-600), (scr_height - 380), 550, 350);
 
         ///showing information here
 
         iSetColor(255, 255, 255);
         char periodInfo[1000] = "Time Period (in seconds) : ";
         char t_string[200];
-        snprintf(t_string, 200, "%0.2lf", bob1.period);
+        snprintf(t_string, 200, "%0.4lf", bob1.period/10);
         strcat(periodInfo, t_string);
         iText(60, (scr_height - 70), periodInfo, GLUT_BITMAP_HELVETICA_18);
+        char sp_cn_Info[1000] = "Spring Constant (in N/m) : ";
+        char sp_cn_string[200];
+        snprintf(sp_cn_string, 200, "%0.4lf", bob1.k*100);
+        strcat(sp_cn_Info, sp_cn_string);
+        iText(60, (scr_height - 100), sp_cn_Info, GLUT_BITMAP_HELVETICA_18);
         char displacementInfo[1000] = "Current displacement (in meters) : ";
         char x_string[200];
-        snprintf(x_string, 200, "%0.2lf", bob1.x);
+        snprintf(x_string, 200, "%0.4lf", bob1.x/100);
         strcat(displacementInfo, x_string);
-        iText(60, (scr_height - 100), displacementInfo, GLUT_BITMAP_HELVETICA_18);
+        iText(60, (scr_height - 130), displacementInfo, GLUT_BITMAP_HELVETICA_18);
         char velocityInfo[1000] = "Current velocity (in m/s) : ";
         char v_string[200];
-        snprintf(v_string, 200, "%0.2lf", bob1.v);
+        snprintf(v_string, 200, "%0.4lf", bob1.v/10);
         strcat(velocityInfo, v_string);
-        iText(60, (scr_height - 130), velocityInfo, GLUT_BITMAP_HELVETICA_18);
+        iText(60, (scr_height - 160), velocityInfo, GLUT_BITMAP_HELVETICA_18);
         char accInfo[1000] = "Current acceleration (in m/s*s) : ";
         char a_string[200];
-        snprintf(a_string, 200, "%0.2lf", bob1.acc);
+        snprintf(a_string, 200, "%0.4lf", bob1.acc);
         strcat(accInfo, a_string);
-        iText(60, (scr_height - 160), accInfo, GLUT_BITMAP_HELVETICA_18);
+        iText(60, (scr_height - 190), accInfo, GLUT_BITMAP_HELVETICA_18);
         char KEInfo[1000] = "Current Kinetic Energy (in Joules) : ";
         char ke_string[200];
-        snprintf(ke_string, 200, "%0.2lf", bob1.kineticEnergy);
+        snprintf(ke_string, 200, "%0.4lf", bob1.kineticEnergy);
         strcat(KEInfo, ke_string);
-        iText(60, (scr_height - 190), KEInfo, GLUT_BITMAP_HELVETICA_18);
+        iText(60, (scr_height - 220), KEInfo, GLUT_BITMAP_HELVETICA_18);
         char PEInfo[1000] = "Current Potential Energy (in Joules) : ";
         char pe_string[200];
-        snprintf(pe_string, 200, "%0.2lf", bob1.potentialEnergy);
+        snprintf(pe_string, 200, "%0.4lf", bob1.potentialEnergy);
         strcat(PEInfo, pe_string);
-        iText(60, (scr_height - 220), PEInfo, GLUT_BITMAP_HELVETICA_18);
+        iText(60, (scr_height - 250), PEInfo, GLUT_BITMAP_HELVETICA_18);
         char TEInfo[1000] = "Current Total Energy (in Joules) : ";
         char te_string[200];
-        snprintf(te_string, 200, "%0.2lf", bob1.totalEnergy);
+        snprintf(te_string, 200, "%0.4lf", bob1.totalEnergy);
         strcat(TEInfo, te_string);
-        iText(60, (scr_height - 250), TEInfo, GLUT_BITMAP_HELVETICA_18);
+        iText(60, (scr_height - 280), TEInfo, GLUT_BITMAP_HELVETICA_18);
+
+        char efflen[1000] = "Current Effective Length (in meters) : ";
+        char efflenval[200];
+        snprintf(efflenval, 200, "%0.2lf", effectiveLength/100);
+        strcat(efflen, efflenval);
+        iText((scr_width-590), (scr_height - 70), efflen, GLUT_BITMAP_HELVETICA_18);
+
+        iSetColor(255, 255, 0);
+        iFilledCircle((scr_width-590), (scr_height - 91), 5, 1000);
+        iFilledCircle((scr_width-590), (scr_height - 151), 5, 1000);
+        iText((scr_width-580), (scr_height - 100), "Press '+' to increase effective length", GLUT_BITMAP_HELVETICA_18);
+        iText((scr_width-580), (scr_height - 130), "by 0.1 meter.", GLUT_BITMAP_HELVETICA_18);
+        iText((scr_width-580), (scr_height - 160), "Press '-' to decrease effective length", GLUT_BITMAP_HELVETICA_18);
+        iText((scr_width-580), (scr_height - 190), "by 0.1 meter.", GLUT_BITMAP_HELVETICA_18);
+
+        iSetColor(255, 255, 255);
+
+        char massie[1000] = "Current Mass of bob (in kilograms) : ";
+        char massieval[200];
+        snprintf(massieval, 200, "%0.2lf", bob1.mass);
+        strcat(massie, massieval);
+        iText((scr_width-590), (scr_height - 230), massie, GLUT_BITMAP_HELVETICA_18);
+
+        iSetColor(255, 255, 0);
+        iFilledCircle((scr_width-590), (scr_height - 251), 5, 1000);
+        iFilledCircle((scr_width-590), (scr_height - 281), 5, 1000);
+        iText((scr_width-580), (scr_height - 260), "Press '*' to increase mass of bob by 0.1 kg.", GLUT_BITMAP_HELVETICA_18);
+        iText((scr_width-580), (scr_height - 290), "Press '/' to decrease mass of bob by 0.1 kg.", GLUT_BITMAP_HELVETICA_18);
+
+        iFilledCircle((scr_width-590), (scr_height - 321), 5, 1000);
+        iFilledCircle((scr_width-590), (scr_height - 351), 5, 1000);
+        iText((scr_width-580), (scr_height - 330), "Press 'UP' to speed up the simulation.", GLUT_BITMAP_HELVETICA_18);
+        iText((scr_width-580), (scr_height - 360), "Press 'DOWN' to slow down the simulation.", GLUT_BITMAP_HELVETICA_18);
 
     }
 
@@ -339,6 +380,24 @@ void iKeyboard(unsigned char key)
             startPendulum = !startPendulum;
 
         }
+        else if(key == '+' && effectiveLength < 700)
+        {
+            effectiveLength += 10;
+        }
+        else if(key == '-' && effectiveLength > 100)
+        {
+            effectiveLength -= 10;
+        }
+        else if(key == '*' && bob1.mass < 4.9)
+        {
+            bob1.mass += 0.1;
+            bob1.radius = 15*bob1.mass;
+        }
+        else if(key == '/' && bob1.mass > 0.2)
+        {
+            bob1.mass -= 0.1;
+            bob1.radius = 15*bob1.mass;
+        }
     }
 
 
@@ -385,6 +444,21 @@ void iSpecialKeyboard(unsigned char key)
     {
         exit(0);
     }
+
+    else if(key == GLUT_KEY_UP)
+    {
+        if(pendulum && timedef < 1)
+        {
+            timedef += 0.05;
+        }
+    }
+    else if(key == GLUT_KEY_DOWN)
+    {
+        if(pendulum && timedef > 0.1)
+        {
+            timedef -= 0.05;
+        }
+    }
     //place your codes for other keys here
 }
 
@@ -430,12 +504,17 @@ void change()
         {
             bob1.x = bob1.Amplitude * cos((bob1.freq*timetracker));
             bob1.y = effectiveLength - sqrt((effectiveLength*effectiveLength) - (bob1.x*bob1.x));
-            bob1.v = bob1.freq*sqrt((bob1.Amplitude*bob1.Amplitude) - (bob1.x*bob1.x));
+            bob1.v = (-1)*bob1.freq * bob1.Amplitude * sin((bob1.freq*timetracker));
             bob1.acc = (-1)*bob1.freq*bob1.freq*(bob1.x);
-            bob1.kineticEnergy = 0.5*bob1.mass*bob1.v*bob1.v;
-            bob1.potentialEnergy = 0.5*bob1.k*bob1.x*bob1.x;
+            bob1.kineticEnergy = (0.5*bob1.mass*bob1.v*bob1.v)/100;
+            bob1.potentialEnergy = (0.5*bob1.k*bob1.x*bob1.x)/100;
             bob1.totalEnergy = bob1.kineticEnergy + bob1.potentialEnergy;
-            timetracker += 0.1;
+            bob1.Amplitude = (effectiveLength)*sin(ampAngle);
+            bob1.freq = sqrt(g_pen/effectiveLength);
+            bob1.k = (bob1.mass*g_pen)/effectiveLength;
+            bob1.period = (2*Pi)/bob1.freq;
+
+            timetracker += timedef;
         }
         else if(reset)
         {
@@ -505,21 +584,21 @@ int main()
 {
     //place your own initialization codes here.
 
-/*
+    /*
 
-    if(pendulum)
-    {
-        iSetTimer(50, change_pendulum);
-        //iInitialize(screen_width, screen_height, "Pendulum Simulator");
-    }
+        if(pendulum)
+        {
+            iSetTimer(50, change_pendulum);
+            //iInitialize(screen_width, screen_height, "Pendulum Simulator");
+        }
 
-    else if(proj)
-    {
-        iSetTimer(10, change_projectile);
-        //iInitialize(scr_width, scr_height, "My main screen");
-    }
+        else if(proj)
+        {
+            iSetTimer(10, change_projectile);
+            //iInitialize(scr_width, scr_height, "My main screen");
+        }
 
-*/
+    */
     iSetTimer(25, change);
     iInitialize(scr_width, scr_height, project_name);
 
