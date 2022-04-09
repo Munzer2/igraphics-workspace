@@ -105,9 +105,11 @@ void iDraw()
     if(home)
     {
         iClear();
-        iShowBMP(0, 0, homepage);
-        iShowBMP((scr_width/2 - 300), 100, buttons[0]);
-        iShowBMP((scr_width/2 + 140), 100, buttons[1]);
+        iSetColor(82, 113, 255);
+        iFilledRectangle(0, 0, 1800, 800);
+        iShowBMP(0, 50, homepage);
+        iShowBMP((scr_width/2 - 300), 220, buttons[0]);
+        iShowBMP((scr_width/2 + 140), 220, buttons[1]);
     }
 
     else if(pendulum)
