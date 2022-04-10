@@ -275,7 +275,10 @@ void iDraw()
         iText(1370,650,kinetic_info,GLUT_BITMAP_HELVETICA_18);
         char acceleration_info_x[100]="The acc. along x-axis is:0";
         iText(1370,630,acceleration_info_x,GLUT_BITMAP_HELVETICA_18);
-        char acceleration_info_y[100]="The acc. along y-axis is: 0.981";
+        char acceleration_info_y[100]="The acc. along y-axis is:";
+        char acceleration_y[100];
+        snprintf(acceleration_y,100,"%0.2lf",g);
+        strcat(acceleration_info_y,acceleration_y);
         iText(1370,610,acceleration_info_y,GLUT_BITMAP_HELVETICA_18);
         char theta_info[100]="The angle of projection is: ";
         char theta_ball[100];
@@ -599,7 +602,6 @@ void change()
 }
 
 /*
-
 void change_projectile()
 {
     if(projectile)
@@ -631,12 +633,9 @@ void change_projectile()
             dt_1=1;
         }
     }
-
 }
-
 void change_pendulum()
 {
-
     if(startPendulum)
     {
         bob1.x = bob1.Amplitude * cos((bob1.freq*timetracker));
@@ -648,9 +647,6 @@ void change_pendulum()
         timetracker = 0;
         reset = !reset;
     }
-
-
-
 }
 */
 
@@ -659,19 +655,16 @@ int main()
     //place your own initialization codes here.
 
     /*
-
         if(pendulum)
         {
             iSetTimer(50, change_pendulum);
             //iInitialize(screen_width, screen_height, "Pendulum Simulator");
         }
-
         else if(proj)
         {
             iSetTimer(10, change_projectile);
             //iInitialize(scr_width, scr_height, "My main screen");
         }
-
     */
     iSetTimer(25, change);
 
