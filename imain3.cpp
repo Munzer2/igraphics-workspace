@@ -223,13 +223,13 @@ void iDraw()
             iText(500,660,return_to_home,GLUT_BITMAP_HELVETICA_18);
         }
         iSetColor(255,255,255);
-        iRectangle(10,100,290,670);
+        iRectangle(10,100,350,670);
         if(projectile)
         {
             iSetColor(255,255,0);
-            iFilledRectangle(30,100,80,potential);
+            iFilledRectangle(40,100,80,potential);
             iSetColor(255,0,0);
-            iFilledRectangle(180,100,80,kinetic);
+            iFilledRectangle(240,100,80,kinetic);
         }
         iSetColor(255,0,0);
         iRectangle(1360,520,scr_width-1380,250);
@@ -237,7 +237,7 @@ void iDraw()
         char str_kinetic[100]="KINETIC";
         iSetColor(255,255,255);
         iText(5,80,str_poten,GLUT_BITMAP_TIMES_ROMAN_24);
-        iText(180,80,str_kinetic,GLUT_BITMAP_TIMES_ROMAN_24);
+        iText(225,80,str_kinetic,GLUT_BITMAP_TIMES_ROMAN_24);
         ///showing motion infos here.
 
         iSetColor(255,255,255);
@@ -390,6 +390,8 @@ void iKeyboard(unsigned char key)
         {
             home = false;
             proj = true;
+            startPendulum = false;
+            reset = false;
         }
         else if(key == '2')
         {

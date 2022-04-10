@@ -1,9 +1,9 @@
-Velocity of ball:35.42
-Angle of projection:58.51
-The current horizontal position of the ball is    : 1079.00
-The current vertical position of the ball is      : 469.78
-The current horizontal velocity of the ball is    : 18.50
-The current vertical velocity of the ball is      : -3.15
+Velocity of ball:37.92
+Angle of projection:63.71
+The current horizontal position of the ball is    : 1558.80
+The current vertical position of the ball is      : 117.38
+The current horizontal velocity of the ball is    : 16.80
+The current vertical velocity of the ball is      : -31.73
 The current horizontal acceleration of the ball is: 0.00
 The current vertical acceleration of the ball is  : -0.98
-The highest vertical distance of the ball is      : 447.36
+The highest vertical distance of the ball is      : 567.02
